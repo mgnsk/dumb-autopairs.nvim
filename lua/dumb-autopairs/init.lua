@@ -16,6 +16,16 @@ local function get_surrounding()
 	return left, right
 end
 
+--- @return boolean
+local function is_open_brace(s)
+	return s == "(" or s == "[" or s == "{"
+end
+
+--- @return boolean
+local function is_space(s)
+	return s:match("%s")
+end
+
 local M = {}
 
 local default_config = {
@@ -52,23 +62,30 @@ function M.setup(config)
 
 	for _, pair in ipairs(config["pairs"]) do
 		if pair.left == pair.right then
-			-- Handle inserting quotes.
-			-- TODO: only when whitespace on left or brace on left
-			vim.keymap.set("i", pair.left, pair.left .. pair.right .. "<Left>")
-		else
-			-- Handle inserting closing brace. It does not attempt to "wrap" anything in braces.
+			-- Handle completing quotes.
 			vim.keymap.set("i", pair.left, function()
 				local left, right = get_surrounding()
 
-				if right == "" or right:match("%s") then
+				if right == pair.right then
+					-- Handle manually inserting the closing quote, just move cursor to right.
+					feedkeys("<Right>")
+				elseif left == "" or is_space(left) or is_open_brace(left) then
+					-- Complete quotes.
+					feedkeys(pair.left .. pair.right .. "<Left>")
+				else
+					feedkeys(pair.left)
+				end
+			end)
+		else
+			-- Handle completing braces. It does not attempt to "wrap" anything in braces.
+			vim.keymap.set("i", pair.left, function()
+				local left, right = get_surrounding()
+
+				if right == "" or is_space(right) then
 					-- Complete braces when end of line or whitespace on right.
 					feedkeys(pair.left .. pair.right .. "<Left>")
-				elseif
-					(left == "(" and right == ")")
-					or (left == "[" and right == "]")
-					or (left == "{" and right == "}")
-				then
-					-- Complete braces when already between any braces.
+				elseif is_open_brace(left) then
+					-- Complete braces when inside braces.
 					feedkeys(pair.left .. pair.right .. "<Left>")
 				else
 					feedkeys(pair.left)
@@ -77,9 +94,9 @@ function M.setup(config)
 
 			-- Handle manually inserting the closing brace, just move cursor to right.
 			vim.keymap.set("i", pair.right, function()
-				local _, right_char = get_surrounding()
+				local _, right = get_surrounding()
 
-				if right_char == pair.right then
+				if right == pair.right then
 					feedkeys("<Right>")
 				else
 					feedkeys(pair.right)
