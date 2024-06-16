@@ -2,7 +2,8 @@
 
 A dumb autopairs plugin for Neovim.
 
-It only inserts closing braces/quotes where needed, it does not attempt to wrap existing text.
+It handles inserting closing braces/quotes, `<CR>` and `<BS>`.
+It does not attempt to wrap existing text.
 
 ## Installation
 
