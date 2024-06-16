@@ -10,10 +10,10 @@ local function get_surrounding()
 	local col = vim.fn.col(".")
 	local line = vim.fn.getline(".")
 
-	local left_char = line:sub(col - 1, col - 1)
-	local right_char = line:sub(col, col)
+	local left = line:sub(col - 1, col - 1)
+	local right = line:sub(col, col)
 
-	return left_char, right_char
+	return left, right
 end
 
 local M = {}
@@ -52,17 +52,23 @@ function M.setup(config)
 
 	for _, pair in ipairs(config["pairs"]) do
 		if pair.left == pair.right then
+			-- Handle inserting quotes.
+			-- TODO: only when whitespace on left or brace on left
 			vim.keymap.set("i", pair.left, pair.left .. pair.right .. "<Left>")
 		else
-			-- Handle inserting closing brace.
+			-- Handle inserting closing brace. It does not attempt to "wrap" anything in braces.
 			vim.keymap.set("i", pair.left, function()
-				local left_char, right_char = get_surrounding()
+				local left, right = get_surrounding()
 
-				if right_char == "" or right_char:match("%s") then
-					-- Insert closing brace when end of line or whitespace on right.
+				if right == "" or right:match("%s") then
+					-- Complete braces when end of line or whitespace on right.
 					feedkeys(pair.left .. pair.right .. "<Left>")
-				elseif left_char == pair.left and right_char == pair.right then
-					-- Insert closing brace when cursor is between a brace pair to created nested braces.
+				elseif
+					(left == "(" and right == ")")
+					or (left == "[" and right == "]")
+					or (left == "{" and right == "}")
+				then
+					-- Complete braces when already between any braces.
 					feedkeys(pair.left .. pair.right .. "<Left>")
 				else
 					feedkeys(pair.left)
@@ -84,12 +90,12 @@ function M.setup(config)
 
 	-- Handle enter key between braces.
 	vim.keymap.set("i", "<CR>", function()
-		local left_char, right_char = get_surrounding()
+		local left, right = get_surrounding()
 
 		local found = false
 
 		for _, pair in ipairs(config["pairs"]) do
-			if left_char == pair.left and right_char == pair.right then
+			if left == pair.left and right == pair.right then
 				found = true
 				break
 			end
@@ -104,12 +110,12 @@ function M.setup(config)
 
 	-- Handle backspace key between braces.
 	vim.keymap.set("i", "<BS>", function()
-		local left_char, right_char = get_surrounding()
+		local left, right = get_surrounding()
 
 		local found = false
 
 		for _, pair in ipairs(config["pairs"]) do
-			if left_char == pair.left and right_char == pair.right then
+			if left == pair.left and right == pair.right then
 				found = true
 				break
 			end
