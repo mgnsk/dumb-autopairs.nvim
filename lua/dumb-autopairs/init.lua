@@ -52,13 +52,15 @@ function M.setup(config)
 	config = vim.tbl_extend("force", default_config, config or {})
 
 	for _, pair in ipairs(config["pairs"]) do
-		-- Insert closing brace and move cursor between them.
+		-- Handle inserting closing braces.
 		vim.keymap.set("i", pair.left, function()
-			local _, right_char = get_surrounding()
+			local left_char, right_char = get_surrounding()
 
-			-- Only insert closing brace when end of line or whitespace on right.
-			-- Don't attempt to "wrap" anything in braces.
 			if right_char == "" or right_char:match("%s") then
+				-- Insert closing brace when end of line or whitespace on right.
+				feedkeys(pair.left .. pair.right .. "<Left>")
+			elseif left_char == pair.left and right_char == pair.right then
+				-- Insert closing brace when cursor is between a brace pair to created nested braces.
 				feedkeys(pair.left .. pair.right .. "<Left>")
 			else
 				feedkeys(pair.left)
@@ -77,6 +79,7 @@ function M.setup(config)
 		end)
 	end
 
+	-- Handle enter key between braces.
 	vim.keymap.set("i", "<CR>", function()
 		local left_char, right_char = get_surrounding()
 
@@ -96,6 +99,7 @@ function M.setup(config)
 		end
 	end, { desc = "Indent when pressing enter between braces" })
 
+	-- Handle backspace key between braces.
 	vim.keymap.set("i", "<BS>", function()
 		local left_char, right_char = get_surrounding()
 
