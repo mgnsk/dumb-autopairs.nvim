@@ -32,19 +32,18 @@ local default_config = {
 			left = "{",
 			right = "}",
 		},
-		-- TODO
-		-- {
-		-- 	left = '"',
-		-- 	right = '"',
-		-- },
-		-- {
-		-- 	left = "'",
-		-- 	right = "'",
-		-- },
-		-- {
-		-- 	left = "`",
-		-- 	right = "`",
-		-- },
+		{
+			left = '"',
+			right = '"',
+		},
+		{
+			left = "'",
+			right = "'",
+		},
+		{
+			left = "`",
+			right = "`",
+		},
 	},
 }
 
@@ -52,31 +51,35 @@ function M.setup(config)
 	config = vim.tbl_extend("force", default_config, config or {})
 
 	for _, pair in ipairs(config["pairs"]) do
-		-- Handle inserting closing braces.
-		vim.keymap.set("i", pair.left, function()
-			local left_char, right_char = get_surrounding()
+		if pair.left == pair.right then
+			vim.keymap.set("i", pair.left, pair.left .. pair.right .. "<Left>")
+		else
+			-- Handle inserting closing brace.
+			vim.keymap.set("i", pair.left, function()
+				local left_char, right_char = get_surrounding()
 
-			if right_char == "" or right_char:match("%s") then
-				-- Insert closing brace when end of line or whitespace on right.
-				feedkeys(pair.left .. pair.right .. "<Left>")
-			elseif left_char == pair.left and right_char == pair.right then
-				-- Insert closing brace when cursor is between a brace pair to created nested braces.
-				feedkeys(pair.left .. pair.right .. "<Left>")
-			else
-				feedkeys(pair.left)
-			end
-		end)
+				if right_char == "" or right_char:match("%s") then
+					-- Insert closing brace when end of line or whitespace on right.
+					feedkeys(pair.left .. pair.right .. "<Left>")
+				elseif left_char == pair.left and right_char == pair.right then
+					-- Insert closing brace when cursor is between a brace pair to created nested braces.
+					feedkeys(pair.left .. pair.right .. "<Left>")
+				else
+					feedkeys(pair.left)
+				end
+			end)
 
-		-- Handle manually inserting the closing brace, just move cursor to right.
-		vim.keymap.set("i", pair.right, function()
-			local _, right_char = get_surrounding()
+			-- Handle manually inserting the closing brace, just move cursor to right.
+			vim.keymap.set("i", pair.right, function()
+				local _, right_char = get_surrounding()
 
-			if right_char == pair.right then
-				feedkeys("<Right>")
-			else
-				feedkeys(pair.right)
-			end
-		end)
+				if right_char == pair.right then
+					feedkeys("<Right>")
+				else
+					feedkeys(pair.right)
+				end
+			end)
+		end
 	end
 
 	-- Handle enter key between braces.
