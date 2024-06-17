@@ -48,6 +48,10 @@ local default_config = {
 			right = "}",
 		},
 		{
+			left = "<",
+			right = ">",
+		},
+		{
 			left = '"',
 			right = '"',
 		},
