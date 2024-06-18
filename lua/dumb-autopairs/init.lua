@@ -27,8 +27,8 @@ local function is_close_brace(s)
 end
 
 --- @return boolean
-local function is_space(s)
-	return s:match("%s")
+local function is_operator(s)
+	return s == "=" or s == ":"
 end
 
 local M = {}
@@ -78,11 +78,12 @@ function M.setup(config)
 				if right == pair.right then
 					-- Handle manually closing the quote.
 					feedkeys("<Right>")
-				elseif (left == "" or is_space(left)) and (right == "" or is_space(right)) then
+				elseif left == "" and right == "" then
 					feedkeys(pair.left .. pair.right .. "<Left>")
-				elseif is_space(left) and right == "" then
+				elseif is_operator(left) and right == "" then
+					-- TODO: treesitter
 					feedkeys(pair.left .. pair.right .. "<Left>")
-				elseif (is_space(left) and is_space(right)) or is_open_brace(left) or is_close_brace(right) then
+				elseif is_open_brace(left) or is_close_brace(right) then
 					feedkeys(pair.left .. pair.right .. "<Left>")
 				else
 					feedkeys(pair.left)
@@ -93,7 +94,7 @@ function M.setup(config)
 			vim.keymap.set("i", pair.left, function()
 				local left, right = get_surrounding()
 
-				if right == "" or is_space(right) then
+				if right == "" then
 					feedkeys(pair.left .. pair.right .. "<Left>")
 				elseif is_open_brace(left) and is_close_brace(right) then
 					feedkeys(pair.left .. pair.right .. "<Left>")

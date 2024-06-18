@@ -49,6 +49,12 @@ local data = {
 		feed = [[i"]],
 		after = { [["|word]] },
 	},
+	{
+		name = "pair when operator on left",
+		before = [[=|]],
+		feed = [[a"]],
+		after = { [[="|"]] },
+	},
 }
 
 describe("quotes", function()

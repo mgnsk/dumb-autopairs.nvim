@@ -26,6 +26,18 @@ local data = {
 		after = { [[<|>]] },
 	},
 	{
+		name = "no pair when space right",
+		before = [[| ]],
+		feed = [[i<]],
+		after = { [[<| ]] },
+	},
+	{
+		name = "no pair when word on right",
+		before = [[|w]],
+		feed = [[i<]],
+		after = { [[<|w]] },
+	},
+	{
 		name = "enter between braces",
 		before = [[<|>]],
 		feed = [[a<CR>]],
@@ -47,6 +59,7 @@ local data = {
 		feed = [[a<BS>]],
 		after = { "<|>" },
 	},
+	-- TOOD: no pair when space on right
 }
 
 describe("quotes", function()
