@@ -1,5 +1,12 @@
 local M = {}
 
+--- @param str1 string
+--- @param str2 string
+--- @param pos integer
+local function insert(str1, str2, pos)
+	return str1:sub(1, pos) .. str2 .. str1:sub(pos + 1)
+end
+
 --- @param tc {name: string, before: string, feed: string, after: string[]}
 M.run_test = function(tc)
 	before_each(function()
