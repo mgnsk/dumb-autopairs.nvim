@@ -39,10 +39,6 @@ Using your favourite package manager:
             right = "}",
         },
         {
-            left = "<",
-            right = ">",
-        },
-        {
             left = '"',
             right = '"',
         },

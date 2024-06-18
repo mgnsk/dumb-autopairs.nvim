@@ -4,70 +4,70 @@ local data = {
 	{
 		name = "pair",
 		before = [[|]],
-		feed = [[a<]],
-		after = { [[<|>]] },
+		feed = [[a{]],
+		after = { [[{|}]] },
 	},
 	{
 		name = "nested pair",
-		before = [[<|>]],
-		feed = [[a<]],
-		after = { [[<<|>>]] },
+		before = [[{|}]],
+		feed = [[a{]],
+		after = { [[{{|}}]] },
 	},
 	{
 		name = "no pair when manually closing",
-		before = [[<|>]],
-		feed = [[a>]],
-		after = { [[<>|]] },
+		before = [[{|}]],
+		feed = [[a}]],
+		after = { [[{}|]] },
 	},
 	{
 		name = "no pair when existing brace on right",
-		before = [[|   >]],
-		feed = [[i<]],
-		after = { [[<|   >]] },
+		before = [[|   }]],
+		feed = [[i{]],
+		after = { [[{|   }]] },
 	},
 	{
 		name = "no pair when word on right",
 		before = [[|   w]],
-		feed = [[i<]],
-		after = { [[<|   w]] },
+		feed = [[i{]],
+		after = { [[{|   w]] },
 	},
 	{
 		name = "enter between braces",
-		before = [[<|>]],
+		before = [[{|}]],
 		feed = [[a<CR>]],
 		after = {
-			[[<]],
+			[[{]],
 			[[|]], -- Note: depends on filetype and autoindent.
-			[[>]],
+			[[}]],
 		},
 	},
 	{
 		name = "enter between braces with space",
-		before = [[<   |   >]],
+		before = [[{   |   }]],
 		feed = [[a<CR>]],
 		after = {
-			[[<   ]],
+			[[{   ]],
 			[[|]], -- Note: depends on filetype and autoindent.
-			[[>]],
+			[[}]],
 		},
 	},
 	{
 		name = "backspace between braces",
-		before = [[<|>]],
+		before = [[{|}]],
 		feed = [[a<BS>]],
 		after = { "|" },
 	},
 	{
 		name = "backspace between braces with space",
-		before = [[<|   >]],
+		before = [[{|   }]],
 		feed = [[a<BS>]],
 		after = { "|" },
 	},
 	{
 		name = "backspace between nested braces",
-		before = [[<<|>>]],
+		before = [[{{|}}]],
 		feed = [[a<BS>]],
-		after = { "<|>" },
+		after = { "{|}" },
 	},
 }
 
@@ -76,8 +76,8 @@ describe("braces", function()
 		require("dumb-autopairs").setup({
 			pairs = {
 				{
-					left = "<",
-					right = ">",
+					left = "{",
+					right = "}",
 				},
 			},
 		})
