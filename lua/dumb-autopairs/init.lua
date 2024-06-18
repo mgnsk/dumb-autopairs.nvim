@@ -105,6 +105,10 @@ function M.setup(config)
 	config = vim.tbl_extend("force", default_config, config or {})
 
 	for _, pair in ipairs(config["pairs"]) do
+		if pair.left:len() > 1 or pair.right:len() > 1 then
+			error("only single-character quotes/braces are supported")
+		end
+
 		if pair.left == pair.right then
 			-- Handle completing quotes.
 			vim.keymap.set("i", pair.left, function()

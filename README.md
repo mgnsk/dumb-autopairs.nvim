@@ -54,8 +54,4 @@ Using your favourite package manager:
 }
 ```
 
-Note: only single-character braces/quotes are currently supported.
-
-## TODO
-
-Handle triple backticks correctly.
+Note: only single-character braces/quotes are supported.
