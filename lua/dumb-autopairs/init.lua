@@ -55,13 +55,13 @@ end
 --- @param s string
 --- @return boolean
 local function has_open_brace_suffix(s)
-	return hassuffix(s, { "(", "[", "{", "<" })
+	return hassuffix(s, { "(", "[", "{" })
 end
 
 --- @param s string
 --- @return boolean
 local function has_close_brace_prefix(s)
-	return hasprefix(s, { ")", "]", "}", ">" })
+	return hasprefix(s, { ")", "]", "}" })
 end
 
 --- @param s string
