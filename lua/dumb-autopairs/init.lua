@@ -67,7 +67,7 @@ end
 --- @param s string
 --- @return boolean
 local function has_operator_suffix(s)
-	return hassuffix(s, { "=", ":" })
+	return hassuffix(s, { "=", ":", "," })
 end
 
 local M = {}

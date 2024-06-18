@@ -51,9 +51,15 @@ local data = {
 	},
 	{
 		name = "pair when operator on left",
-		before = [[=|]],
+		before = [[= |]],
 		feed = [[a"]],
-		after = { [[="|"]] },
+		after = { [[= "|"]] },
+	},
+	{
+		name = "pair when comma on left",
+		before = [[, |]],
+		feed = [[a"]],
+		after = { [[, "|"]] },
 	},
 }
 
