@@ -18,12 +18,12 @@ end
 
 --- @return boolean
 local function is_open_brace(s)
-	return s == "(" or s == "[" or s == "{"
+	return s == "(" or s == "[" or s == "{" or s == "<"
 end
 
 --- @return boolean
 local function is_close_brace(s)
-	return s == ")" or s == "]" or s == "}"
+	return s == ")" or s == "]" or s == "}" or s == ">"
 end
 
 --- @return boolean
@@ -78,7 +78,9 @@ function M.setup(config)
 				if right == pair.right then
 					-- Handle manually closing the quote.
 					feedkeys("<Right>")
-				elseif left == "" or right == "" then
+				elseif (left == "" or is_space(left)) and (right == "" or is_space(right)) then
+					feedkeys(pair.left .. pair.right .. "<Left>")
+				elseif is_space(left) and right == "" then
 					feedkeys(pair.left .. pair.right .. "<Left>")
 				elseif (is_space(left) and is_space(right)) or is_open_brace(left) or is_close_brace(right) then
 					feedkeys(pair.left .. pair.right .. "<Left>")
@@ -89,9 +91,11 @@ function M.setup(config)
 		else
 			-- Handle completing braces. It does not attempt to "wrap" anything in braces.
 			vim.keymap.set("i", pair.left, function()
-				local _, right = get_surrounding()
+				local left, right = get_surrounding()
 
-				if right == "" or is_space(right) or is_close_brace(right) then
+				if right == "" or is_space(right) then
+					feedkeys(pair.left .. pair.right .. "<Left>")
+				elseif is_open_brace(left) and is_close_brace(right) then
 					feedkeys(pair.left .. pair.right .. "<Left>")
 				else
 					feedkeys(pair.left)
