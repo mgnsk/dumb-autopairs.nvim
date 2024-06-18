@@ -9,15 +9,15 @@ local data = {
 	},
 	{
 		name = "pair after brace open",
-		before = [[(|]],
+		before = [[(   |]],
 		feed = [[a"]],
-		after = { [[("|"]] },
+		after = { [[(   "|"]] },
 	},
 	{
 		name = "pair before brace close",
-		before = [[|)]],
+		before = [[|   )]],
 		feed = [[i"]],
-		after = { [["|")]] },
+		after = { [["|"   )]] },
 	},
 	{
 		name = "manual close",

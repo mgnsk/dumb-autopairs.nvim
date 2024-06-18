@@ -4,31 +4,70 @@ local function feedkeys(keys)
 	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(keys, true, false, true), "n", false)
 end
 
---- Return surrounding characters for cursor.
---- @return string, string
+--- @param s string
+--- @return string
+local function trim(s)
+	return s:match("^%s*(.*)"):match("(.-)%s*$")
+end
+
+--- Return surrounding texts for cursor.
+--- @return string left, string right
 local function get_surrounding()
 	local col = vim.fn.col(".")
 	local line = vim.fn.getline(".")
 
-	local left = line:sub(col - 1, col - 1)
-	local right = line:sub(col, col)
+	local left = line:sub(0, col - 1)
+	local right = line:sub(col, -1)
 
 	return left, right
 end
 
+--- @param s string
+--- @param prefix_list string[]
 --- @return boolean
-local function is_open_brace(s)
-	return s == "(" or s == "[" or s == "{" or s == "<"
+local function hasprefix(s, prefix_list)
+	s = trim(s)
+
+	for _, prefix in ipairs(prefix_list) do
+		if prefix == "" or s:sub(1, #prefix) == prefix then
+			return true
+		end
+	end
+
+	return false
 end
 
+--- @param s string
+--- @param suffix_list string[]
 --- @return boolean
-local function is_close_brace(s)
-	return s == ")" or s == "]" or s == "}" or s == ">"
+local function hassuffix(s, suffix_list)
+	s = trim(s)
+
+	for _, suffix in ipairs(suffix_list) do
+		if suffix == "" or s:sub(-#suffix) == suffix then
+			return true
+		end
+	end
+
+	return false
 end
 
+--- @param s string
 --- @return boolean
-local function is_operator(s)
-	return s == "=" or s == ":"
+local function has_open_brace_suffix(s)
+	return hassuffix(s, { "(", "[", "{", "<" })
+end
+
+--- @param s string
+--- @return boolean
+local function has_close_brace_prefix(s)
+	return hasprefix(s, { ")", "]", "}", ">" })
+end
+
+--- @param s string
+--- @return boolean
+local function has_operator_suffix(s)
+	return hassuffix(s, { "=", ":" })
 end
 
 local M = {}
@@ -75,15 +114,14 @@ function M.setup(config)
 			vim.keymap.set("i", pair.left, function()
 				local left, right = get_surrounding()
 
-				if right == pair.right then
+				if right:sub(1, 1) == pair.right then
 					-- Handle manually closing the quote.
 					feedkeys("<Right>")
 				elseif left == "" and right == "" then
 					feedkeys(pair.left .. pair.right .. "<Left>")
-				elseif is_operator(left) and right == "" then
-					-- TODO: treesitter
+				elseif has_operator_suffix(left) and right == "" then
 					feedkeys(pair.left .. pair.right .. "<Left>")
-				elseif is_open_brace(left) or is_close_brace(right) then
+				elseif has_open_brace_suffix(left) or has_close_brace_prefix(right) then
 					feedkeys(pair.left .. pair.right .. "<Left>")
 				else
 					feedkeys(pair.left)
@@ -96,7 +134,7 @@ function M.setup(config)
 
 				if right == "" then
 					feedkeys(pair.left .. pair.right .. "<Left>")
-				elseif is_open_brace(left) and is_close_brace(right) then
+				elseif has_open_brace_suffix(left) and has_close_brace_prefix(right) then
 					feedkeys(pair.left .. pair.right .. "<Left>")
 				else
 					feedkeys(pair.left)
@@ -107,7 +145,7 @@ function M.setup(config)
 			vim.keymap.set("i", pair.right, function()
 				local _, right = get_surrounding()
 
-				if right == pair.right then
+				if right:sub(1, 1) == pair.right then
 					feedkeys("<Right>")
 				else
 					feedkeys(pair.right)
@@ -123,7 +161,7 @@ function M.setup(config)
 		local found = false
 
 		for _, pair in ipairs(config["pairs"]) do
-			if left == pair.left and right == pair.right then
+			if hassuffix(left, { pair.left }) and hasprefix(right, { pair.right }) then
 				found = true
 				break
 			end
@@ -141,16 +179,23 @@ function M.setup(config)
 		local left, right = get_surrounding()
 
 		local found = false
+		local del_count = 1
 
 		for _, pair in ipairs(config["pairs"]) do
-			if left == pair.left and right == pair.right then
+			if left:sub(-1) == pair.left and hasprefix(right, { pair.right }) then
+				-- Find how many <Del> we need to reach pair.right.
+				local idx, _ = right:find(pair.right)
+				if idx ~= nil then
+					del_count = idx
+				end
+
 				found = true
 				break
 			end
 		end
 
 		if found then
-			feedkeys("<Right><BS><BS>")
+			feedkeys(string.rep("<Del>", del_count) .. "<BS>")
 		else
 			feedkeys("<BS>")
 		end

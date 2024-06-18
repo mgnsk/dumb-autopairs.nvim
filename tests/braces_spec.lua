@@ -21,21 +21,15 @@ local data = {
 	},
 	{
 		name = "no pair when existing brace on right",
-		before = [[|>]],
+		before = [[|   >]],
 		feed = [[i<]],
-		after = { [[<|>]] },
-	},
-	{
-		name = "no pair when space right",
-		before = [[| ]],
-		feed = [[i<]],
-		after = { [[<| ]] },
+		after = { [[<|   >]] },
 	},
 	{
 		name = "no pair when word on right",
-		before = [[|w]],
+		before = [[|   w]],
 		feed = [[i<]],
-		after = { [[<|w]] },
+		after = { [[<|   w]] },
 	},
 	{
 		name = "enter between braces",
@@ -43,7 +37,17 @@ local data = {
 		feed = [[a<CR>]],
 		after = {
 			[[<]],
-			[[|]], -- Note: depends on autoindent.
+			[[|]], -- Note: depends on filetype and autoindent.
+			[[>]],
+		},
+	},
+	{
+		name = "enter between braces with space",
+		before = [[<   |   >]],
+		feed = [[a<CR>]],
+		after = {
+			[[<   ]],
+			[[|]], -- Note: depends on filetype and autoindent.
 			[[>]],
 		},
 	},
@@ -54,15 +58,20 @@ local data = {
 		after = { "|" },
 	},
 	{
+		name = "backspace between braces with space",
+		before = [[<|   >]],
+		feed = [[a<BS>]],
+		after = { "|" },
+	},
+	{
 		name = "backspace between nested braces",
 		before = [[<<|>>]],
 		feed = [[a<BS>]],
 		after = { "<|>" },
 	},
-	-- TOOD: no pair when space on right
 }
 
-describe("quotes", function()
+describe("braces", function()
 	before_each(function()
 		require("dumb-autopairs").setup({
 			pairs = {
