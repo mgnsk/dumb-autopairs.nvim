@@ -67,7 +67,13 @@ end
 --- @param s string
 --- @return boolean
 local function has_operator_suffix(s)
-	return hassuffix(s, { "=", ":", "," })
+	return hassuffix(s, { "=", ":" })
+end
+
+--- @param s string
+--- @return boolean
+local function has_comma_suffix(s)
+	return hassuffix(s, { "," })
 end
 
 local M = {}
@@ -119,9 +125,9 @@ function M.setup(config)
 					feedkeys("<Right>")
 				elseif left == "" and right == "" then
 					feedkeys(pair.left .. pair.right .. "<Left>")
-				elseif has_operator_suffix(left) and right == "" then
+				elseif (has_operator_suffix(left) or has_comma_suffix(left)) and right == "" then
 					feedkeys(pair.left .. pair.right .. "<Left>")
-				elseif has_open_brace_suffix(left) or has_close_brace_prefix(right) then
+				elseif has_open_brace_suffix(left) or (has_comma_suffix(left) and has_close_brace_prefix(right)) then
 					feedkeys(pair.left .. pair.right .. "<Left>")
 				else
 					feedkeys(pair.left)

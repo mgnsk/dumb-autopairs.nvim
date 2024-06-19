@@ -10,6 +10,7 @@ end
 --- @param tc {name: string, before: string, feed: string, after: string[]}
 M.run_test = function(tc)
 	before_each(function()
+		vim.cmd("bd!")
 		vim.cmd(":new")
 
 		local col, _ = tc.before:find("|")

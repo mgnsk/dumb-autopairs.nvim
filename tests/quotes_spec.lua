@@ -14,10 +14,10 @@ local data = {
 		after = { [[(   "|"]] },
 	},
 	{
-		name = "pair before brace close",
-		before = [[|   )]],
-		feed = [[i"]],
-		after = { [["|"   )]] },
+		name = "pair before brace close inside list between braces",
+		before = [[,|   )]],
+		feed = [[a"]],
+		after = { [[,"|"   )]] },
 	},
 	{
 		name = "manual close",
@@ -42,6 +42,12 @@ local data = {
 		before = [[word|]],
 		feed = [[a"]],
 		after = { [[word"|]] },
+	},
+	{
+		name = "no pair when non-empty or non-bracket on left and close-bracket on right",
+		before = [[word|)]],
+		feed = [[a"]],
+		after = { [[word"|)]] },
 	},
 	{
 		name = "no pair when non-empty or non-bracket on right",
