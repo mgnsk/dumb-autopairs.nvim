@@ -140,7 +140,7 @@ function M.setup(config)
 
 				if right == "" then
 					feedkeys(pair.left .. pair.right .. "<Left>")
-				elseif has_open_brace_suffix(left) and has_close_brace_prefix(right) then
+				elseif has_open_brace_suffix(left) or has_close_brace_prefix(right) then
 					feedkeys(pair.left .. pair.right .. "<Left>")
 				else
 					feedkeys(pair.left)

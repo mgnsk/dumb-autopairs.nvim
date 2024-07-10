@@ -20,10 +20,10 @@ local data = {
 		after = { [[{}|]] },
 	},
 	{
-		name = "no pair when existing brace on right",
+		name = "pair when existing brace on right",
 		before = [[|   }]],
 		feed = [[i{]],
-		after = { [[{|   }]] },
+		after = { [[{|}   }]] },
 	},
 	{
 		name = "no pair when word on right",
