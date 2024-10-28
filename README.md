@@ -22,9 +22,7 @@ Using your favourite package manager:
 {
     "mgnsk/dumb-autopairs.nvim",
     event = "InsertEnter",
-    config = function()
-        require("dumb-autopairs").setup()
-    end,
+    opts = {},
 },
 ```
 
