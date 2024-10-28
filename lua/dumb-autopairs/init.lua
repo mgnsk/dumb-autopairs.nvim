@@ -60,6 +60,12 @@ end
 
 --- @param s string
 --- @return boolean
+local function has_open_brace_prefix(s)
+	return hasprefix(s, { "(", "[", "{" })
+end
+
+--- @param s string
+--- @return boolean
 local function has_close_brace_prefix(s)
 	return hasprefix(s, { ")", "]", "}" })
 end
@@ -140,7 +146,7 @@ function M.setup(config)
 
 				if right == "" then
 					feedkeys(pair.left .. pair.right .. "<Left>")
-				elseif has_open_brace_suffix(left) or has_close_brace_prefix(right) then
+				elseif has_open_brace_suffix(left) or has_close_brace_prefix(right) or has_open_brace_prefix(right) then
 					feedkeys(pair.left .. pair.right .. "<Left>")
 				else
 					feedkeys(pair.left)
