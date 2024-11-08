@@ -76,9 +76,7 @@ end
 local function on_open_brace(pair)
 	local _, right = get_surrounding()
 
-	if right == "" then
-		feedkeys(pair.left .. pair.right .. "<Left>")
-	elseif begins_with_alnum(trim(right)) then
+	if begins_with_alnum(trim(right)) then
 		feedkeys(pair.left)
 	else
 		feedkeys(pair.left .. pair.right .. "<Left>")
