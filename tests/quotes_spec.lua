@@ -62,10 +62,22 @@ local data = {
 		after = { [[= "|"]] },
 	},
 	{
+		name = "pair when assigning variable",
+		before = [[x = |]],
+		feed = [[a"]],
+		after = { [[x = "|"]] },
+	},
+	{
 		name = "pair when comma on left",
 		before = [[, |]],
 		feed = [[a"]],
 		after = { [[, "|"]] },
+	},
+	{
+		name = "pair when comma on right",
+		before = [[| ,]],
+		feed = [[i"]],
+		after = { [["|" ,]] },
 	},
 }
 

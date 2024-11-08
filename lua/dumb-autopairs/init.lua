@@ -52,34 +52,24 @@ local function hassuffix(s, suffix_list)
 	return false
 end
 
---- @param s string
---- @return boolean
-local function has_open_brace_suffix(s)
-	return hassuffix(s, { "(", "[", "{" })
+local function has_alnum_prefix(s)
+	s = trim(s)
+	s = string.sub(s, 1, 1)
+	if s == "" then
+		return false
+	end
+
+	return string.match(s, "%w")
 end
 
---- @param s string
---- @return boolean
-local function has_open_brace_prefix(s)
-	return hasprefix(s, { "(", "[", "{" })
-end
+local function has_alnum_suffix(s)
+	s = trim(s)
+	s = string.sub(s, -1)
+	if s == "" then
+		return false
+	end
 
---- @param s string
---- @return boolean
-local function has_close_brace_prefix(s)
-	return hasprefix(s, { ")", "]", "}" })
-end
-
---- @param s string
---- @return boolean
-local function has_operator_suffix(s)
-	return hassuffix(s, { "=", ":" })
-end
-
---- @param s string
---- @return boolean
-local function has_comma_suffix(s)
-	return hassuffix(s, { "," })
+	return string.match(s, "%w")
 end
 
 --- @param pair Pair
@@ -89,27 +79,23 @@ local function on_open_quote(pair)
 	if right:sub(1, 1) == pair.right then
 		-- Handle manually closing the quote.
 		feedkeys("<Right>")
-	elseif left == "" and right == "" then
-		feedkeys(pair.left .. pair.right .. "<Left>")
-	elseif (has_operator_suffix(left) or has_comma_suffix(left)) and right == "" then
-		feedkeys(pair.left .. pair.right .. "<Left>")
-	elseif has_open_brace_suffix(left) or (has_comma_suffix(left) and has_close_brace_prefix(right)) then
-		feedkeys(pair.left .. pair.right .. "<Left>")
-	else
+	elseif has_alnum_suffix(left) or has_alnum_prefix(right) then
 		feedkeys(pair.left)
+	else
+		feedkeys(pair.left .. pair.right .. "<Left>")
 	end
 end
 
 --- @param pair Pair
 local function on_open_brace(pair)
-	local left, right = get_surrounding()
+	local _, right = get_surrounding()
 
 	if right == "" then
 		feedkeys(pair.left .. pair.right .. "<Left>")
-	elseif has_open_brace_suffix(left) or has_close_brace_prefix(right) or has_open_brace_prefix(right) then
-		feedkeys(pair.left .. pair.right .. "<Left>")
-	else
+	elseif has_alnum_prefix(right) then
 		feedkeys(pair.left)
+	else
+		feedkeys(pair.left .. pair.right .. "<Left>")
 	end
 end
 

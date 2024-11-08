@@ -32,6 +32,12 @@ local data = {
 		after = { [[{|}   {]] },
 	},
 	{
+		name = "pair when comma on right",
+		before = [[|   ,]],
+		feed = [[i{]],
+		after = { [[{|}   ,]] },
+	},
+	{
 		name = "no pair when word on right",
 		before = [[|   w]],
 		feed = [[i{]],
