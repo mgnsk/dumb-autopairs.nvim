@@ -36,6 +36,8 @@ local function hassuffix(s, suffix)
 	return suffix == "" or s:sub(-#suffix) == suffix
 end
 
+--- @param s string
+--- @return boolean
 local function begins_with_alnum(s)
 	s = string.sub(s, 1, 1)
 	if s == "" then
@@ -45,6 +47,8 @@ local function begins_with_alnum(s)
 	return string.match(s, "%w")
 end
 
+--- @param s string
+--- @return boolean
 local function ends_with_alnum(s)
 	s = string.sub(s, -1)
 	if s == "" then
