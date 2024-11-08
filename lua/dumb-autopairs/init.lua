@@ -67,6 +67,8 @@ local function on_open_quote(pair)
 		feedkeys("<Right>")
 	elseif ends_with_alnum(trim(left)) or begins_with_alnum(trim(right)) then
 		feedkeys(pair.left)
+	elseif left:sub(-1) == pair.left then
+		feedkeys(pair.right)
 	else
 		feedkeys(pair.left .. pair.right .. "<Left>")
 	end

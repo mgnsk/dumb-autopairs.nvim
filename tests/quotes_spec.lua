@@ -38,6 +38,12 @@ local data = {
 		after = { [[word"|]] },
 	},
 	{
+		name = "no pair when existing quote left",
+		before = [["|]],
+		feed = [[a"]],
+		after = { [[""|]] },
+	},
+	{
 		name = "no pair when non-empty or non-bracket on left",
 		before = [[word|]],
 		feed = [[a"]],
