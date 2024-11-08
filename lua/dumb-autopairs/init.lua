@@ -23,37 +23,20 @@ local function get_surrounding()
 end
 
 --- @param s string
---- @param prefix_list string[]
+--- @param prefix string
 --- @return boolean
-local function hasprefix(s, prefix_list)
-	s = trim(s)
-
-	for _, prefix in ipairs(prefix_list) do
-		if prefix == "" or s:sub(1, #prefix) == prefix then
-			return true
-		end
-	end
-
-	return false
+local function hasprefix(s, prefix)
+	return prefix == "" or s:sub(1, #prefix) == prefix
 end
 
 --- @param s string
---- @param suffix_list string[]
+--- @param suffix string
 --- @return boolean
-local function hassuffix(s, suffix_list)
-	s = trim(s)
-
-	for _, suffix in ipairs(suffix_list) do
-		if suffix == "" or s:sub(-#suffix) == suffix then
-			return true
-		end
-	end
-
-	return false
+local function hassuffix(s, suffix)
+	return suffix == "" or s:sub(-#suffix) == suffix
 end
 
-local function has_alnum_prefix(s)
-	s = trim(s)
+local function begins_with_alnum(s)
 	s = string.sub(s, 1, 1)
 	if s == "" then
 		return false
@@ -62,8 +45,7 @@ local function has_alnum_prefix(s)
 	return string.match(s, "%w")
 end
 
-local function has_alnum_suffix(s)
-	s = trim(s)
+local function ends_with_alnum(s)
 	s = string.sub(s, -1)
 	if s == "" then
 		return false
@@ -79,7 +61,7 @@ local function on_open_quote(pair)
 	if right:sub(1, 1) == pair.right then
 		-- Handle manually closing the quote.
 		feedkeys("<Right>")
-	elseif has_alnum_suffix(left) or has_alnum_prefix(right) then
+	elseif ends_with_alnum(trim(left)) or begins_with_alnum(trim(right)) then
 		feedkeys(pair.left)
 	else
 		feedkeys(pair.left .. pair.right .. "<Left>")
@@ -92,7 +74,7 @@ local function on_open_brace(pair)
 
 	if right == "" then
 		feedkeys(pair.left .. pair.right .. "<Left>")
-	elseif has_alnum_prefix(right) then
+	elseif begins_with_alnum(trim(right)) then
 		feedkeys(pair.left)
 	else
 		feedkeys(pair.left .. pair.right .. "<Left>")
@@ -117,7 +99,7 @@ local function on_enter(config)
 	local found = false
 
 	for _, pair in ipairs(config["pairs"]) do
-		if hassuffix(left, { pair.left }) and hasprefix(right, { pair.right }) then
+		if hassuffix(trim(left), pair.left) and hasprefix(trim(right), pair.right) then
 			found = true
 			break
 		end
@@ -141,7 +123,7 @@ local function on_backspace(config)
 	local del_count = 1
 
 	for _, pair in ipairs(config["pairs"]) do
-		if left:sub(-1) == pair.left and hasprefix(right, { pair.right }) then
+		if left:sub(-1) == pair.left and hasprefix(trim(right), pair.right) then
 			-- Find how many <Del> we need to reach pair.right.
 			local idx, _ = right:find(pair.right)
 			if idx ~= nil then
