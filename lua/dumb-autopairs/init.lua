@@ -59,7 +59,7 @@ local function ends_with_alnum(s)
 end
 
 --- @param pair Pair
-local function on_open_quote(pair)
+local function on_quote(pair)
 	local left, right = get_surrounding()
 
 	if right:sub(1, 1) == pair.right then
@@ -196,7 +196,7 @@ function M.setup(config)
 
 		if pair.left == pair.right then
 			vim.keymap.set("i", pair.left, function()
-				on_open_quote(pair)
+				on_quote(pair)
 			end, { desc = "Complete quotes" })
 		else
 			vim.keymap.set("i", pair.left, function()
