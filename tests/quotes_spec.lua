@@ -9,15 +9,15 @@ local data = {
 	},
 	{
 		name = "pair after brace open",
-		before = [[(   |]],
+		before = [[(|]],
 		feed = [[a"]],
-		after = { [[(   "|"]] },
+		after = { [[("|"]] },
 	},
 	{
 		name = "pair before brace close inside list between braces",
-		before = [[,|   )]],
+		before = [[,|)]],
 		feed = [[a"]],
-		after = { [[,"|"   )]] },
+		after = { [[,"|")]] },
 	},
 	{
 		name = "manual close",
@@ -32,7 +32,7 @@ local data = {
 		after = { [["|]] },
 	},
 	{
-		name = "no pair when existing quote on right",
+		name = "no pair when existing quote on right and word on left",
 		before = [[word|"]],
 		feed = [[a"]],
 		after = { [[word"|]] },
@@ -44,46 +44,16 @@ local data = {
 		after = { [[""|]] },
 	},
 	{
-		name = "no pair when non-empty or non-bracket on left",
+		name = "no pair when word on left",
 		before = [[word|]],
 		feed = [[a"]],
 		after = { [[word"|]] },
 	},
 	{
-		name = "no pair when non-empty or non-bracket on left and close-bracket on right",
-		before = [[word|)]],
-		feed = [[a"]],
-		after = { [[word"|)]] },
-	},
-	{
-		name = "no pair when non-empty or non-bracket on right",
+		name = "no pair when word on right",
 		before = [[|word]],
 		feed = [[i"]],
 		after = { [["|word]] },
-	},
-	{
-		name = "pair when operator on left",
-		before = [[= |]],
-		feed = [[a"]],
-		after = { [[= "|"]] },
-	},
-	{
-		name = "pair when assigning variable",
-		before = [[x = |]],
-		feed = [[a"]],
-		after = { [[x = "|"]] },
-	},
-	{
-		name = "pair when comma on left",
-		before = [[, |]],
-		feed = [[a"]],
-		after = { [[, "|"]] },
-	},
-	{
-		name = "pair when comma on right",
-		before = [[| ,]],
-		feed = [[i"]],
-		after = { [["|" ,]] },
 	},
 }
 

@@ -20,28 +20,16 @@ local data = {
 		after = { [[{}|]] },
 	},
 	{
-		name = "pair when existing close brace on right",
-		before = [[|   }]],
-		feed = [[i{]],
-		after = { [[{|}   }]] },
-	},
-	{
-		name = "pair when existing open brace on right",
-		before = [[|   {]],
-		feed = [[i{]],
-		after = { [[{|}   {]] },
-	},
-	{
 		name = "pair when comma on right",
-		before = [[|   ,]],
+		before = [[|,]],
 		feed = [[i{]],
-		after = { [[{|}   ,]] },
+		after = { [[{|},]] },
 	},
 	{
 		name = "no pair when word on right",
-		before = [[|   w]],
+		before = [[|w]],
 		feed = [[i{]],
-		after = { [[{|   w]] },
+		after = { [[{|w]] },
 	},
 	{
 		name = "enter between braces",

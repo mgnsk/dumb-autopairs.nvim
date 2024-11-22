@@ -4,12 +4,6 @@ local function feedkeys(keys)
 	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(keys, true, false, true), "n", false)
 end
 
---- @param s string
---- @return string
-local function trim(s)
-	return s:match("^%s*(.*)"):match("(.-)%s*$")
-end
-
 --- Return surrounding texts for cursor.
 --- @return string left, string right
 local function get_surrounding()
@@ -23,22 +17,8 @@ local function get_surrounding()
 end
 
 --- @param s string
---- @param prefix string
 --- @return boolean
-local function hasprefix(s, prefix)
-	return prefix == "" or s:sub(1, #prefix) == prefix
-end
-
---- @param s string
---- @param suffix string
---- @return boolean
-local function hassuffix(s, suffix)
-	return suffix == "" or s:sub(-#suffix) == suffix
-end
-
---- @param s string
---- @return boolean
-local function begins_with_alnum(s)
+local function startswith_alnum(s)
 	s = string.sub(s, 1, 1)
 	if s == "" then
 		return false
@@ -49,7 +29,7 @@ end
 
 --- @param s string
 --- @return boolean
-local function ends_with_alnum(s)
+local function endswith_alnum(s)
 	s = string.sub(s, -1)
 	if s == "" then
 		return false
@@ -63,12 +43,13 @@ local function on_quote(pair)
 	local left, right = get_surrounding()
 
 	if right:sub(1, 1) == pair.right then
-		-- Handle manually closing the quote.
+		-- Manually close existing right quote.
 		feedkeys("<Right>")
-	elseif ends_with_alnum(trim(left)) or begins_with_alnum(trim(right)) then
-		feedkeys(pair.left)
 	elseif left:sub(-1) == pair.left then
+		-- Manually close quote.
 		feedkeys(pair.right)
+	elseif endswith_alnum(left) or startswith_alnum(right) then
+		feedkeys(pair.left)
 	else
 		feedkeys(pair.left .. pair.right .. "<Left>")
 	end
@@ -76,12 +57,21 @@ end
 
 --- @param pair Pair
 local function on_open_brace(pair)
-	local _, right = get_surrounding()
+	local left, right = get_surrounding()
 
-	if begins_with_alnum(trim(right)) then
-		feedkeys(pair.left)
-	else
+	if
+		right == ""
+		or vim.startswith(right, " ")
+		or vim.startswith(right, "\t")
+		or endswith_alnum(left)
+		or vim.startswith(right, ")")
+		or vim.startswith(right, "}")
+		or vim.startswith(right, "]")
+		or vim.startswith(right, ",")
+	then
 		feedkeys(pair.left .. pair.right .. "<Left>")
+	else
+		feedkeys(pair.left)
 	end
 end
 
@@ -103,7 +93,7 @@ local function on_enter(config)
 	local found = false
 
 	for _, pair in ipairs(config["pairs"]) do
-		if hassuffix(trim(left), pair.left) and hasprefix(trim(right), pair.right) then
+		if vim.endswith(vim.trim(left), pair.left) and vim.startswith(vim.trim(right), pair.right) then
 			found = true
 			break
 		end
@@ -127,7 +117,7 @@ local function on_backspace(config)
 	local del_count = 1
 
 	for _, pair in ipairs(config["pairs"]) do
-		if left:sub(-1) == pair.left and hasprefix(trim(right), pair.right) then
+		if left:sub(-1) == pair.left and vim.startswith(vim.trim(right), pair.right) then
 			-- Find how many <Del> we need to reach pair.right.
 			local idx, _ = right:find(pair.right)
 			if idx ~= nil then
