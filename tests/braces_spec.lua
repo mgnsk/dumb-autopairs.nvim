@@ -32,6 +32,12 @@ local data = {
 		after = { [[{|w]] },
 	},
 	{
+		name = "no pair between words",
+		before = [[w|w]],
+		feed = [[a{]],
+		after = { [[w{|w]] },
+	},
+	{
 		name = "enter between braces",
 		before = [[{|}]],
 		feed = [[a<CR>]],

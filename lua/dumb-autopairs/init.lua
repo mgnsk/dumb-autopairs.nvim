@@ -57,13 +57,12 @@ end
 
 --- @param pair Pair
 local function on_open_brace(pair)
-	local left, right = get_surrounding()
+	local _, right = get_surrounding()
 
 	if
 		right == ""
 		or vim.startswith(right, " ")
 		or vim.startswith(right, "\t")
-		or endswith_alnum(left)
 		or vim.startswith(right, ")")
 		or vim.startswith(right, "}")
 		or vim.startswith(right, "]")
