@@ -111,17 +111,33 @@ local function on_backspace(config)
 
 	for _, pair in ipairs(config["pairs"]) do
 		-- Delete adjacent pair.
-		if left:sub(-1) == pair.left and right:sub(1) == pair.right then
+		if left:sub(-1) == pair.left and right:sub(1, 1) == pair.right then
 			feedkeys("<Del><BS>")
 			return
 		end
 
-		-- Delete braces pair.
+		-- Delete braces pair when only whitespace in between.
 		if pair.left ~= pair.right and left:sub(-1) == pair.left then
-			local lnum, col = unpack(vim.fn.searchpairpos(pair.left, "", pair.right, "n"))
-			if lnum > 0 and col > 0 then
-				vim.cmd.normal("da" .. pair.left)
-				return
+			local endline, endcol = unpack(vim.fn.searchpairpos(pair.left, "", pair.right, "n"))
+			if endline > 0 and endcol > 0 then
+				local curline, curcol = unpack(vim.api.nvim_win_get_cursor(0))
+				local lines = vim.api.nvim_buf_get_text(0, curline - 1, curcol, endline - 1, endcol - 1, {})
+
+				local iswhitespace = true
+
+				for _, line in ipairs(lines) do
+					-- Match non-whitespace one or more.
+					if line:match("%S+") then
+						iswhitespace = false
+						break
+					end
+				end
+
+				if iswhitespace then
+					vim.cmd.normal("da" .. pair.left)
+					vim.api.nvim_win_set_cursor(0, { curline, curcol - 1 })
+					return
+				end
 			end
 		end
 	end

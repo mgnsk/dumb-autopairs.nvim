@@ -97,6 +97,18 @@ local data = {
 		feed = [[a<BS>]],
 		after = { "{|}" },
 	},
+	{
+		name = "backspace between braces containing word deletes left brace",
+		before = { [[{|word}]] },
+		feed = [[a<BS>]],
+		after = { "w|ord}" }, -- TODO
+	},
+	{
+		name = "backspace between braces containing word deletes left brace",
+		before = { [[ {|word}]] }, -- Space in the beginning.
+		feed = [[a<BS>]],
+		after = { " |word}" },
+	},
 }
 
 describe("braces", function()
