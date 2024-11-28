@@ -81,6 +81,21 @@ local data = {
 		after = { "|" },
 	},
 	{
+		name = "backspace between multiline braces before word",
+		before = {
+			[[{|]],
+			"",
+			"",
+			[[}]],
+			[[word]],
+		},
+		feed = [[a<BS>]],
+		after = {
+			"|",
+			"word",
+		},
+	},
+	{
 		name = "backspace between multiline nested braces",
 		before = {
 			[[{{|]],

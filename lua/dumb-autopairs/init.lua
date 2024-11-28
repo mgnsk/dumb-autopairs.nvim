@@ -134,8 +134,7 @@ local function on_backspace(config)
 				end
 
 				if iswhitespace then
-					vim.cmd("normal! da" .. pair.left)
-					vim.api.nvim_win_set_cursor(0, { curline, curcol - 1 })
+					vim.api.nvim_buf_set_text(0, curline - 1, curcol - 1, endline - 1, endcol, { "" })
 					return
 				end
 			end
