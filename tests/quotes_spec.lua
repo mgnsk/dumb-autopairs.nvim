@@ -3,57 +3,69 @@ local utils = require("tests.test_utils")
 local data = {
 	{
 		name = "pair",
-		before = [[|]],
+		before = { [[|]] },
 		feed = [[a"]],
 		after = { [["|"]] },
 	},
 	{
 		name = "pair after brace open",
-		before = [[(|]],
+		before = { [[(|]] },
 		feed = [[a"]],
 		after = { [[("|"]] },
 	},
 	{
 		name = "pair before brace close inside list between braces",
-		before = [[,|)]],
+		before = { [[,|)]] },
 		feed = [[a"]],
 		after = { [[,"|")]] },
 	},
 	{
 		name = "manual close",
-		before = [["|"]],
+		before = { [["|"]] },
 		feed = [[a"]],
 		after = { [[""|]] },
 	},
 	{
 		name = "no pair when existing quote on right",
-		before = [[|"]],
+		before = { [[|"]] },
 		feed = [[i"]],
 		after = { [["|]] },
 	},
 	{
 		name = "no pair when existing quote on right and word on left",
-		before = [[word|"]],
+		before = { [[word|"]] },
 		feed = [[a"]],
 		after = { [[word"|]] },
 	},
 	{
 		name = "no pair when existing quote left",
-		before = [["|]],
+		before = { [["|]] },
 		feed = [[a"]],
 		after = { [[""|]] },
 	},
 	{
 		name = "no pair when word on left",
-		before = [[word|]],
+		before = { [[word|]] },
 		feed = [[a"]],
 		after = { [[word"|]] },
 	},
 	{
 		name = "no pair when word on right",
-		before = [[|word]],
+		before = { [[|word]] },
 		feed = [[i"]],
 		after = { [["|word]] },
+	},
+	{
+		name = "backspace between adjacent quotes deletes both",
+		before = { [["|"]] },
+		feed = [[a<BS>]],
+		after = { [[|]] },
+	},
+	{
+		name = "backspace between spaced quotes deletes left",
+		before = { [["| "]] },
+		feed = [[a<BS>]],
+		after = { [[ |"]] },
 	},
 }
 

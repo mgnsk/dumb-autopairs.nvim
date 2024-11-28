@@ -3,43 +3,43 @@ local utils = require("tests.test_utils")
 local data = {
 	{
 		name = "pair",
-		before = [[|]],
+		before = { [[|]] },
 		feed = [[a{]],
 		after = { [[{|}]] },
 	},
 	{
 		name = "nested pair",
-		before = [[{|}]],
+		before = { [[{|}]] },
 		feed = [[a{]],
 		after = { [[{{|}}]] },
 	},
 	{
 		name = "no pair when manually closing",
-		before = [[{|}]],
+		before = { [[{|}]] },
 		feed = [[a}]],
 		after = { [[{}|]] },
 	},
 	{
 		name = "pair when comma on right",
-		before = [[|,]],
+		before = { [[|,]] },
 		feed = [[i{]],
 		after = { [[{|},]] },
 	},
 	{
 		name = "no pair when word on right",
-		before = [[|w]],
+		before = { [[|w]] },
 		feed = [[i{]],
 		after = { [[{|w]] },
 	},
 	{
 		name = "no pair between words",
-		before = [[w|w]],
+		before = { [[w|w]] },
 		feed = [[a{]],
 		after = { [[w{|w]] },
 	},
 	{
 		name = "enter between braces",
-		before = [[{|}]],
+		before = { [[{|}]] },
 		feed = [[a<CR>]],
 		after = {
 			[[{]],
@@ -49,7 +49,7 @@ local data = {
 	},
 	{
 		name = "enter between braces with space",
-		before = [[{   |   }]],
+		before = { [[{   |   }]] },
 		feed = [[a<CR>]],
 		after = {
 			[[{   ]],
@@ -59,19 +59,41 @@ local data = {
 	},
 	{
 		name = "backspace between braces",
-		before = [[{|}]],
+		before = { [[{|}]] },
 		feed = [[a<BS>]],
 		after = { "|" },
 	},
 	{
 		name = "backspace between braces with space",
-		before = [[{|   }]],
+		before = { [[{|   }]] },
 		feed = [[a<BS>]],
 		after = { "|" },
 	},
 	{
+		name = "backspace between multiline braces",
+		before = {
+			[[{|]],
+			"",
+			"",
+			[[}]],
+		},
+		feed = [[a<BS>]],
+		after = { "|" },
+	},
+	{
+		name = "backspace between multiline nested braces",
+		before = {
+			[[{{|]],
+			"",
+			"",
+			[[}}]],
+		},
+		feed = [[a<BS>]],
+		after = { "{|}" },
+	},
+	{
 		name = "backspace between nested braces",
-		before = [[{{|}}]],
+		before = { [[{{|}}]] },
 		feed = [[a<BS>]],
 		after = { "{|}" },
 	},

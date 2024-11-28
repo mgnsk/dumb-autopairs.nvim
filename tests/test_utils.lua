@@ -7,17 +7,32 @@ local function insert(str1, str2, pos)
 	return str1:sub(1, pos) .. str2 .. str1:sub(pos + 1)
 end
 
---- @param tc {name: string, before: string, feed: string, after: string[]}
+--- @param tc {name: string, before: string[], feed: string, after: string[]}
 M.run_test = function(tc)
 	before_each(function()
 		vim.cmd("bd!")
 		vim.cmd(":new")
 
-		local col, _ = tc.before:find("|")
-		local text = tc.before:gsub("|", "")
+		local cursorLine = 0
+		local cursorCol = 0
+		local lines = {}
 
-		vim.api.nvim_set_current_line(text)
-		vim.fn.setcursorcharpos(1, col - 1)
+		for i, line in ipairs(tc.before) do
+			-- Find the cursor placeholder col.
+			local col, _ = line:find("|")
+			if col ~= nil then
+				cursorLine = i
+				cursorCol = col
+			end
+
+			-- Append the line without cursor placeholder.
+			line, _ = line:gsub("|", "")
+			table.insert(lines, line)
+		end
+
+		vim.api.nvim_buf_set_lines(0, 0, -1, true, lines)
+
+		vim.fn.setcursorcharpos(cursorLine, cursorCol - 1)
 		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(tc.feed, true, false, true), "x", false)
 	end)
 

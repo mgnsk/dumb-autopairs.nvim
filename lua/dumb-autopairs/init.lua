@@ -109,27 +109,24 @@ end
 local function on_backspace(config)
 	local left, right = get_surrounding()
 
-	local found = false
-	local del_count = 1
-
 	for _, pair in ipairs(config["pairs"]) do
-		if left:sub(-1) == pair.left and vim.startswith(vim.trim(right), pair.right) then
-			-- Find how many <Del> we need to reach pair.right.
-			local idx, _ = right:find(pair.right)
-			if idx ~= nil then
-				del_count = idx
-			end
+		-- Delete adjacent pair.
+		if left:sub(-1) == pair.left and right:sub(1) == pair.right then
+			feedkeys("<Del><BS>")
+			return
+		end
 
-			found = true
-			break
+		-- Delete braces pair.
+		if pair.left ~= pair.right and left:sub(-1) == pair.left then
+			local lnum, col = unpack(vim.fn.searchpairpos(pair.left, "", pair.right, "n"))
+			if lnum > 0 and col > 0 then
+				vim.cmd.normal("da" .. pair.left)
+				return
+			end
 		end
 	end
 
-	if found then
-		feedkeys(string.rep("<Del>", del_count) .. "<BS>")
-	else
-		feedkeys("<BS>")
-	end
+	feedkeys("<BS>")
 end
 
 local M = {}
