@@ -67,6 +67,12 @@ local data = {
 		feed = [[a<BS>]],
 		after = { [[ |"]] },
 	},
+	{
+		name = "go json tags",
+		before = { [[`json:|`]] },
+		feed = [[a"]],
+		after = { [[`json:"|"`]] },
+	},
 }
 
 describe("quotes", function()

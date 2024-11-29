@@ -16,6 +16,18 @@ local function get_surrounding()
 	return left, right
 end
 
+--- @param s string
+--- @return boolean
+local function startswith_alnum(s)
+	return string.match(s, "^%w")
+end
+
+--- @param s string
+--- @return boolean
+local function endswith_alnum(s)
+	return string.match(s, "%w$")
+end
+
 --- @param pair Pair
 local function on_quote(pair)
 	local left, right = get_surrounding()
@@ -26,29 +38,10 @@ local function on_quote(pair)
 	elseif left:sub(-1) == pair.left then
 		-- Manually close quote.
 		feedkeys(pair.right)
-	elseif
-		(
-			right == ""
-			or vim.startswith(right, " ")
-			or vim.startswith(right, "\t")
-			or vim.startswith(right, ")")
-			or vim.startswith(right, "}")
-			or vim.startswith(right, "]")
-			or vim.startswith(right, ",")
-		)
-		and (
-			left == ""
-			or vim.endswith(left, " ")
-			or vim.endswith(left, "\t")
-			or vim.endswith(left, "(")
-			or vim.endswith(left, "{")
-			or vim.endswith(left, "[")
-			or vim.endswith(left, ",")
-		)
-	then
-		feedkeys(pair.left .. pair.right .. "<Left>")
-	else
+	elseif endswith_alnum(left) or startswith_alnum(right) then
 		feedkeys(pair.left)
+	else
+		feedkeys(pair.left .. pair.right .. "<Left>")
 	end
 end
 
