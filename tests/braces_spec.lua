@@ -32,6 +32,12 @@ local data = {
 		after = { [[{|w]] },
 	},
 	{
+		name = "no pair when word on right after space",
+		before = { [[| w]] },
+		feed = [[i{]],
+		after = { [[{| w]] },
+	},
+	{
 		name = "no pair between words",
 		before = { [[w|w]] },
 		feed = [[a{]],

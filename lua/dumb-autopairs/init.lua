@@ -49,10 +49,10 @@ end
 local function on_open_brace(pair)
 	local _, right = get_surrounding()
 
+	right = vim.trim(right)
+
 	if
 		right == ""
-		or vim.startswith(right, " ")
-		or vim.startswith(right, "\t")
 		or vim.startswith(right, ")")
 		or vim.startswith(right, "}")
 		or vim.startswith(right, "]")
