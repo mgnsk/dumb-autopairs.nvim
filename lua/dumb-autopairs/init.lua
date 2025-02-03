@@ -109,26 +109,34 @@ local function on_backspace(config)
 			return
 		end
 
-		-- Delete braces pair when only whitespace in between.
+		-- Delete braces pair when only whitespace in between and same line.
 		if pair.left ~= pair.right and left:sub(-1) == pair.left then
 			local endline, endcol = unpack(vim.fn.searchpairpos(pair.left, "", pair.right, "n"))
+
 			if endline > 0 and endcol > 0 then
 				local curline, curcol = unpack(vim.api.nvim_win_get_cursor(0))
-				local lines = vim.api.nvim_buf_get_text(0, curline - 1, curcol, endline - 1, endcol - 1, {})
+				if endline == curline then
+					local start_row = curline - 1
+					local start_col = curcol
+					local end_row = endline - 1
+					local end_col = endcol - 1
 
-				local iswhitespace = true
+					local lines = vim.api.nvim_buf_get_text(0, start_row, start_col, end_row, end_col, {})
 
-				for _, line in ipairs(lines) do
-					-- Match non-whitespace one or more.
-					if line:match("%S+") then
-						iswhitespace = false
-						break
+					local iswhitespace = true
+
+					for _, line in ipairs(lines) do
+						-- Match non-whitespace one or more.
+						if line:match("%S+") then
+							iswhitespace = false
+							break
+						end
 					end
-				end
 
-				if iswhitespace then
-					vim.api.nvim_buf_set_text(0, curline - 1, curcol - 1, endline - 1, endcol, { "" })
-					return
+					if iswhitespace then
+						vim.api.nvim_buf_set_text(0, start_row, start_col - 1, end_row, end_col + 1, { "" })
+						return
+					end
 				end
 			end
 		end

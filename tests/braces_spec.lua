@@ -76,20 +76,25 @@ local data = {
 		after = { "|" },
 	},
 	{
-		name = "backspace between multiline braces",
+		name = "backspace between multiline braces does not remove pair",
 		before = {
-			[[{|]],
+			[[|]],
 			"",
 			"",
 			[[}]],
 		},
 		feed = [[a<BS>]],
-		after = { "|" },
+		after = {
+			[[|]],
+			"",
+			"",
+			[[}]],
+		},
 	},
 	{
-		name = "backspace between multiline braces before word",
+		name = "backspace between multiline braces before word does not remove pair",
 		before = {
-			[[{|]],
+			[[|]],
 			"",
 			"",
 			[[}]],
@@ -97,12 +102,15 @@ local data = {
 		},
 		feed = [[a<BS>]],
 		after = {
-			"|",
-			"word",
+			[[|]],
+			"",
+			"",
+			[[}]],
+			[[word]],
 		},
 	},
 	{
-		name = "backspace between multiline nested braces",
+		name = "backspace between multiline nested braces does not remove pair",
 		before = {
 			[[{{|]],
 			"",
@@ -110,7 +118,12 @@ local data = {
 			[[}}]],
 		},
 		feed = [[a<BS>]],
-		after = { "{|}" },
+		after = {
+			[[{|]],
+			"",
+			"",
+			[[}}]],
+		},
 	},
 	{
 		name = "backspace between nested braces",
