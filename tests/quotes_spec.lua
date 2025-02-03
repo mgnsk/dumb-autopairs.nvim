@@ -2,16 +2,16 @@ local utils = require("tests.test_utils")
 
 local data = {
 	{
-		name = "pair",
-		before = { [[|]] },
+		name = "variable assign",
+		before = { [[= |]] },
 		feed = [[a"]],
-		after = { [["|"]] },
+		after = { [[= "|"]] },
 	},
 	{
-		name = "pair after brace open",
-		before = { [[(|]] },
+		name = "pair in brace",
+		before = { [[(|)]] },
 		feed = [[a"]],
-		after = { [[("|"]] },
+		after = { [[("|")]] },
 	},
 	{
 		name = "pair before brace close inside list between braces",
@@ -44,7 +44,7 @@ local data = {
 		after = { [[""|]] },
 	},
 	{
-		name = "no pair when word on left",
+		name = "pair when word left and end of line",
 		before = { [[word|]] },
 		feed = [[a"]],
 		after = { [[word"|]] },
@@ -68,6 +68,12 @@ local data = {
 		after = { [[ |"]] },
 	},
 	{
+		name = "go struct tag (simulating with double quote)",
+		before = { [[a |]] },
+		feed = [[a"]],
+		after = { [[a "|"]] },
+	},
+	{
 		name = "go json tags",
 		before = { [[`json:|`]] },
 		feed = [[a"]],
@@ -87,7 +93,5 @@ describe("quotes", function()
 		})
 	end)
 
-	for _, tc in ipairs(data) do
-		utils.run_test(tc)
-	end
+	utils.run_multiple_tests(data)
 end)

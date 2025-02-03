@@ -16,21 +16,11 @@ local function get_surrounding()
 	return left, right
 end
 
---- @param s string
---- @return boolean
-local function startswith_alnum(s)
-	return string.match(s, "^%w")
-end
-
---- @param s string
---- @return boolean
-local function endswith_alnum(s)
-	return string.match(s, "%w$")
-end
-
 --- @param pair Pair
 local function on_quote(pair)
 	local left, right = get_surrounding()
+	local rt = vim.trim(right)
+	local lt = vim.trim(left)
 
 	if right:sub(1, 1) == pair.right then
 		-- Manually close existing right quote.
@@ -38,10 +28,28 @@ local function on_quote(pair)
 	elseif left:sub(-1) == pair.left then
 		-- Manually close quote.
 		feedkeys(pair.right)
-	elseif endswith_alnum(left) or startswith_alnum(right) then
-		feedkeys(pair.left)
-	else
+	elseif
+		vim.endswith(lt, ",") and (vim.startswith(rt, ")") or vim.startswith(rt, "}") or vim.startswith(rt, "]"))
+	then
+		-- Inside list.
 		feedkeys(pair.left .. pair.right .. "<Left>")
+	elseif (vim.endswith(lt, ":") or vim.endswith(lt, "=")) and rt == "" then
+		-- Variable assignment or JSON.
+		feedkeys(pair.left .. pair.right .. "<Left>")
+	elseif (left:sub(-1) == " " or left:sub(-1) == "\t") and rt == "" then
+		-- Go struct tags.
+		feedkeys(pair.left .. pair.right .. "<Left>")
+	elseif (lt:sub(-1) == ":" and right:sub(1, 1)) == "`" then
+		-- Go struct tag values.
+		feedkeys(pair.left .. pair.right .. "<Left>")
+	elseif
+		(vim.endswith(lt, "(") or vim.endswith(lt, "{") or vim.endswith(lt, "["))
+		and (vim.startswith(rt, ")") or vim.startswith(rt, "}") or vim.startswith(rt, "]"))
+	then
+		-- Directly between braces.
+		feedkeys(pair.left .. pair.right .. "<Left>")
+	else
+		feedkeys(pair.left)
 	end
 end
 

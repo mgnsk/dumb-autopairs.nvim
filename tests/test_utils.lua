@@ -7,7 +7,28 @@ local function insert(str1, str2, pos)
 	return str1:sub(1, pos) .. str2 .. str1:sub(pos + 1)
 end
 
---- @param tc {name: string, before: string[], feed: string, after: string[]}
+--- @param cases {name: string, before: string[], feed: string, after: string[], focus: boolean}[]
+M.run_multiple_tests = function(cases)
+	local focused = {}
+
+	for _, tc in ipairs(cases) do
+		if tc.focus then
+			table.insert(focused, tc)
+		end
+	end
+
+	if #focused > 0 then
+		for _, tc in ipairs(focused) do
+			M.run_test(tc)
+		end
+	else
+		for _, tc in ipairs(cases) do
+			M.run_test(tc)
+		end
+	end
+end
+
+--- @param tc {name: string, before: string[], feed: string, after: string[], focus: boolean}
 M.run_test = function(tc)
 	before_each(function()
 		vim.cmd("bd!")

@@ -157,7 +157,5 @@ describe("braces", function()
 		})
 	end)
 
-	for _, tc in ipairs(data) do
-		utils.run_test(tc)
-	end
+	utils.run_multiple_tests(data)
 end)
