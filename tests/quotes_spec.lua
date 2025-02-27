@@ -2,10 +2,16 @@ local utils = require("tests.test_utils")
 
 local data = {
 	{
-		name = "variable assign",
+		name = "pair when variable assign with space",
 		before = { [[= |]] },
 		feed = [[a"]],
 		after = { [[= "|"]] },
+	},
+	{
+		name = "no pair when variable assign without space",
+		before = { [[=|]] },
+		feed = [[a"]],
+		after = { [[="|]] },
 	},
 	{
 		name = "pair in brace",

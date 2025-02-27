@@ -22,19 +22,22 @@ local function on_quote(pair)
 	local rt = vim.trim(right)
 	local lt = vim.trim(left)
 
+	local hasopenleft = function(s)
+		return vim.endswith(s, "(") or vim.endswith(s, "{") or vim.endswith(s, "[")
+	end
+
+	local hascloseright = function(s)
+		return vim.startswith(s, ")") or vim.startswith(s, "}") or vim.startswith(s, "]")
+	end
+
 	if right:sub(1, 1) == pair.right then
 		-- Manually close existing right quote.
 		feedkeys("<Right>")
 	elseif left:sub(-1) == pair.left then
 		-- Manually close quote.
 		feedkeys(pair.right)
-	elseif
-		vim.endswith(lt, ",") and (vim.startswith(rt, ")") or vim.startswith(rt, "}") or vim.startswith(rt, "]"))
-	then
+	elseif vim.endswith(lt, ",") and hascloseright(rt) then
 		-- Inside list.
-		feedkeys(pair.left .. pair.right .. "<Left>")
-	elseif (vim.endswith(lt, ":") or vim.endswith(lt, "=")) and rt == "" then
-		-- Variable assignment or JSON.
 		feedkeys(pair.left .. pair.right .. "<Left>")
 	elseif (left:sub(-1) == " " or left:sub(-1) == "\t") and rt == "" then
 		-- Go struct tags.
@@ -42,10 +45,7 @@ local function on_quote(pair)
 	elseif (lt:sub(-1) == ":" and right:sub(1, 1)) == "`" then
 		-- Go struct tag values.
 		feedkeys(pair.left .. pair.right .. "<Left>")
-	elseif
-		(vim.endswith(lt, "(") or vim.endswith(lt, "{") or vim.endswith(lt, "["))
-		and (vim.startswith(rt, ")") or vim.startswith(rt, "}") or vim.startswith(rt, "]"))
-	then
+	elseif hasopenleft(lt) and hascloseright(rt) then
 		-- Directly between braces.
 		feedkeys(pair.left .. pair.right .. "<Left>")
 	else
@@ -128,6 +128,13 @@ local function on_backspace(config)
 					local start_col = curcol
 					local end_row = endline - 1
 					local end_col = endcol - 1
+
+					-- E5108: Error executing lua: ...vim/lazy/dumb-autopairs.nvim/lua/dumb-autopairs/init.lua:132: start_col must be less than or equal to end_col
+					-- stack traceback:
+					--         [C]: in function 'nvim_buf_get_text'
+					--         ...vim/lazy/dumb-autopairs.nvim/lua/dumb-autopairs/init.lua:132: in function 'on_backspace'
+					--         ...vim/lazy/dumb-autopairs.nvim/lua/dumb-autopairs/init.lua:223: in function <...vim/lazy/dumb-autopairs.nvim/lua/dumb-autopairs/init.lua:222>
+					--         TODO: breaks with line break - same line but end col is less than start col
 
 					local lines = vim.api.nvim_buf_get_text(0, start_row, start_col, end_row, end_col, {})
 
